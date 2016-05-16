@@ -1,0 +1,207 @@
+clear all;
+close all;
+img2 = imread('D:\图像作业\lesson-01_采样头个数识别\03.png');
+% img2 = rgb2hsi(imgd2);
+h = im2double(img2);
+gs = h;
+bv = h;
+I1 = rgb2hsv(h);
+Ir = I1(:,:,1);
+Ig = I1(:,:,2);
+Ib = I1(:,:,3);
+% subplot(2,2,1);imshow(Ir);title('h');
+% subplot(2,2,2);imshow(Ig);title('s');
+% subplot(2,2,3);imshow(Ib);title('v');
+% figure,imshow(Ir);title('Ir');
+h(:,:,2) = 1;
+h(:,:,3) = 1;
+gs(:,:,1) = 1;
+gs(:,:,3) = 1;
+bv(:,:,1) = 1;
+bv(:,:,2) = 1;
+figure,imshow(h);title('h(1)维图');
+% imtool(h);
+% imtool(gs);
+% imtool(bv);
+% imtool(Ir);
+% imtool(Ig);
+% imtool(Ib);
+% for j=1:480
+%     for i=1:640
+%         if(Ir(j,i)<0.9)
+%             Ic(j,i) = 0;
+%         else
+%             Ic(j,i) = 1;
+%         end
+%     end
+% end
+% figure,imshow(Ic);title('Ic');
+% imtool(Ic);
+% Igr = find(Ir ==0);
+
+for j=1:480
+    for i=1:640
+        if(h(j,i,1)<0.85)
+            hc(j,i) = 0;
+        else
+            hc(j,i) = 1;
+        end
+    end
+end
+for j=1:480
+    for i=1:640
+        if(gs(j,i,2)<0.85)
+            gsc(j,i) = 0;
+        else
+            gsc(j,i) = 1;
+        end
+    end
+end
+for j=1:480
+    for i=1:640
+        if(bv(j,i,3)<0.85)
+            bvc(j,i) = 0;
+        else
+            bvc(j,i) = 1;
+        end
+    end
+end
+imtool(hc);
+
+% 图2中亮度太强 填充会模糊掉边界
+% hch = imfill(hc,'hole');
+% figure,imshow(hch);
+
+
+% 要先腐蚀在膨胀
+% hc = imdilate(hc,strel('disk',5));
+% figure,imshow(hc);
+
+% 骨架化
+hhh = bwmorph(hc,'skel',Inf);
+figure,imshow(hhh);title('骨架化');
+hhimd = imdilate(hc,strel('disk',1));
+figure,imshow(hhimd);
+
+% 灰度二进制图像边缘检测
+hdb = bwperim(hc);
+figure,imshow(hdb);title('灰度二进制边缘检测');
+
+hcl = bwlabel(hc);
+statsc = regionprops(hcl,'Area'); 
+'Centroid'
+statsc = regionprops(hcl,'Area'); 
+
+% 高帽滤波
+imth = imtophat(hc,strel('disk',15));
+figure,imshow(imth);title('高帽滤波');
+% imth = bwhitmiss(hc,strel('disk',15));
+% figure,imshow(imth);title('高帽滤波1');
+
+hc = imerode(hc,strel('square',5));
+figure,imshow(hc);
+hc = imerode(hc,strel('square',5));
+figure,imshow(hc);
+% hch = imfill(hc,'hole');
+% figure,imshow(hch);
+
+
+
+% 
+% hch = imerode(hch,strel('line',5,0));
+% figure,imshow(hch);
+
+% hc1 = imdilate(hc,strel('disk',5));
+% figure,imshow(hc1);
+% imtool(gsc);
+% imtool(bvc);
+
+
+% for j=1:480
+%     for i=1:640
+%         if(Ir(j,i)<0.2 )
+%             if(hc(j,i)
+%             hc(j,i) = 1;
+%         end
+%     end
+% end
+
+for j=1:480
+    for i=1:640
+        if(Ir(j,i)<0.2)
+            Irc(j,i) = 1;
+        else
+            Irc(j,i) = 0;
+        end
+    end
+end
+
+
+% Ir8 = uint8(round(Ir*255));
+% imtool(Ir8);
+% Irc1 = bwareaopen(Irc,3500);
+% imtool(Irc1);
+
+
+
+
+% se = strel('disk',50);
+% imrc = imerode(Irc,se);
+
+
+
+% imrc = bwlabel(Irc);
+% statsc = regionprops(imrc,'Area');    %求各连通域的大小
+% areac = cat(1,statsc.Area);
+% index = find(areac == max(areac));        %求最大连通域的索引
+% img = ismember(imrc,find(areac>0)); 
+% figure,imshow(img),title('Irc联通区域');
+
+% imLabel = bwlabel(hc); 
+% stats = regionprops(imLabel,'Area');    %求各连通域的大小
+% area = cat(1,stats.Area);
+% index = find(area == max(area));        %求最大连通域的索引
+% img = ismember(imLabel,find(area>1200)); 
+% figure,imshow(img),title('联通区域');
+
+
+% se = strel('disk',20);
+% bgray = imopen(sgray,se);
+% egray = imsubtract(sgray,bgray);
+% figure,imshow(egray);title('增强黑白图像');
+% 
+% sgray = rgb2gray(img2);
+% sgray1 = im2double(sgray);
+% imtool(sgray1);
+% sgray11 = uint8(round(sgray1*255));
+% hc11 = uint8(round(hc*255));
+% egray = imsubtract(sgray11,hc11);
+% imtool(egray);
+
+
+
+% se = strel('disk',24);
+% bgray = imopen(sgray,se);
+% egray = imsubtract(sgray,bgray);
+% figure,imshow(egray);title('增强黑白图像');
+% imtool(egray);
+% 
+% adim = imadd(egray,egray);
+% imtool(adim);
+
+% fmax1=double(max(max(egray)));%egray的最大值并输出双精度型 
+% fmin1=double(min(min(egray)));%egray的最小值并输出双精度型 
+% level=(fmax1-(fmax1-fmin1)/3)/255;%获得最佳阈值 
+% bw22=im2bw(egray,level);%转换图像为二进制图像 
+% bw2=double(bw22);  
+% figure;imshow(bw2);title('图像二值化');
+% imtool(bw2);
+
+
+% img1 = imread('D:\图像作业\lesson-01_采样头个数识别\01.png');
+% % img2 = rgb2hsi(imgd2);
+% h = im2double(img2);
+% I1 = rgb2hsv(h);
+
+
+
